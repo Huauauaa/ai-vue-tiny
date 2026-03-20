@@ -1,10 +1,40 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { computed, onMounted, ref, watch } from 'vue'
+import { TreeMenu as TinyTreeMenu } from '@opentiny/vue'
+import { RouterView, useRoute, useRouter } from 'vue-router'
 
-const menus = [
-  { label: '首页', to: '/home' },
-  { label: '用户页面', to: '/users' },
+type MenuNode = {
+  id: string
+  label: string
+  path: string
+}
+
+const menus: MenuNode[] = [
+  { id: 'home', label: '首页', path: '/home' },
+  { id: 'users', label: '用户页面', path: '/users' },
 ]
+
+const route = useRoute()
+const router = useRouter()
+const treeMenuRef = ref<{ setCurrentKey?: (key: string) => void } | null>(null)
+
+const currentMenuKey = computed(() => {
+  const matched = menus.find((item) => route.path.startsWith(item.path))
+  return matched?.id || menus[0].id
+})
+
+const syncCurrentMenu = () => {
+  treeMenuRef.value?.setCurrentKey?.(currentMenuKey.value)
+}
+
+const handleMenuChange = (data: MenuNode) => {
+  if (data?.path && data.path !== route.path) {
+    void router.push(data.path)
+  }
+}
+
+onMounted(syncCurrentMenu)
+watch(() => route.path, syncCurrentMenu)
 </script>
 
 <template>
@@ -15,17 +45,15 @@ const menus = [
 
     <div class="flex min-h-[calc(100vh-56px)]">
       <aside class="w-56 border-r border-slate-200 bg-white p-4">
-        <nav class="flex flex-col gap-2">
-          <RouterLink
-            v-for="menu in menus"
-            :key="menu.to"
-            :to="menu.to"
-            class="rounded-md px-3 py-2 text-sm hover:bg-slate-100"
-            active-class="bg-blue-50 font-medium text-blue-600"
-          >
-            {{ menu.label }}
-          </RouterLink>
-        </nav>
+        <TinyTreeMenu
+          ref="treeMenuRef"
+          :data="menus"
+          node-key="id"
+          :show-filter="false"
+          :menu-collapsible="false"
+          :width-adapt="true"
+          @current-change="handleMenuChange"
+        />
       </aside>
 
       <main class="flex-1 p-6">
