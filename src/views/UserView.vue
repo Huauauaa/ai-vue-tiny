@@ -2,14 +2,14 @@
 import { onMounted, ref } from 'vue'
 import { Pager as TinyPager, Table as TinyTable } from '@opentiny/vue'
 import { http } from '../api/http'
-import type { ApiUser, UserRow } from '../types/user'
+import type { UserTypes } from '../types/user'
 
 const pageSize = 5
 const currentPage = ref(1)
 const totalUsers = ref(0)
 const loading = ref(false)
 const errorMessage = ref('')
-const users = ref<UserRow[]>([])
+const users = ref<UserTypes.UserRow[]>([])
 
 const tableColumns = [
   { title: 'ID', field: 'id', width: 80 },
@@ -24,7 +24,7 @@ const fetchUsers = async (page = currentPage.value) => {
   errorMessage.value = ''
 
   try {
-    const { data, headers } = await http.get<ApiUser[]>('/users', {
+    const { data, headers } = await http.get<UserTypes.ApiUser[]>('/users', {
       params: {
         _page: page,
         _limit: pageSize,
