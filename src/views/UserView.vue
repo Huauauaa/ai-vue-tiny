@@ -2,7 +2,6 @@
 import { onMounted, ref } from 'vue'
 import { Pager as TinyPager, Table as TinyTable } from '@opentiny/vue'
 import { http } from '../api/http'
-import type { UserTypes } from '../types/user'
 
 const pageSize = 5
 const currentPage = ref(1)

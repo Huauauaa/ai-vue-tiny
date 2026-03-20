@@ -1,4 +1,4 @@
-export declare namespace UserTypes {
+declare namespace UserTypes {
   export type ApiUser = {
     id: number
     name: string
