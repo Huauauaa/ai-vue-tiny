@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import TableView from '../views/TableView.vue'
+import UserView from '../views/UserView.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -14,9 +14,9 @@ const routes: RouteRecordRaw[] = [
     component: HomeView,
   },
   {
-    path: '/table',
-    name: 'table',
-    component: TableView,
+    path: '/users',
+    name: 'users',
+    component: UserView,
   },
 ]
 

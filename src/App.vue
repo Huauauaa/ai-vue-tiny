@@ -3,7 +3,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
 const menus = [
   { label: '首页', to: '/home' },
-  { label: '表格页面', to: '/table' },
+  { label: '用户页面', to: '/users' },
 ]
 </script>
 
