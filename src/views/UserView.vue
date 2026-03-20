@@ -2,24 +2,7 @@
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
 import { Pager as TinyPager, Table as TinyTable } from '@opentiny/vue'
-
-type ApiUser = {
-  id: number
-  name: string
-  username: string
-  email: string
-  company: {
-    name: string
-  }
-}
-
-type UserRow = {
-  id: number
-  name: string
-  username: string
-  email: string
-  company: string
-}
+import type { ApiUser, UserRow } from '../types/user'
 
 const pageSize = 5
 const currentPage = ref(1)
