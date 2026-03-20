@@ -85,10 +85,13 @@ onMounted(() => {
   <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
     <h2 class="mb-4 text-xl font-semibold">用户页面</h2>
 
-    <p v-if="loading" class="text-sm text-slate-500">正在加载用户数据...</p>
-    <p v-else-if="errorMessage" class="text-sm text-red-500">{{ errorMessage }}</p>
+    <p v-if="errorMessage" class="mb-3 text-sm text-red-500">{{ errorMessage }}</p>
 
-    <template v-else>
+    <div
+      v-loading="loading"
+      tiny-loading__text="正在加载用户数据..."
+      class="min-h-[220px]"
+    >
       <TinyTable :columns="tableColumns" :data="users" width="100%" />
 
       <TinyPager
@@ -99,6 +102,6 @@ onMounted(() => {
         layout="prev, pager, next, jumper, total"
         @current-change="handleCurrentChange"
       />
-    </template>
+    </div>
   </section>
 </template>
