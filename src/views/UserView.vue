@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import axios from 'axios'
 import { onMounted, ref } from 'vue'
 import { Pager as TinyPager, Table as TinyTable } from '@opentiny/vue'
+import { http } from '../api/http'
 import type { ApiUser, UserRow } from '../types/user'
 
 const pageSize = 5
@@ -10,11 +10,6 @@ const totalUsers = ref(0)
 const loading = ref(false)
 const errorMessage = ref('')
 const users = ref<UserRow[]>([])
-
-const api = axios.create({
-  baseURL: 'https://jsonplaceholder.typicode.com',
-  timeout: 10000,
-})
 
 const tableColumns = [
   { title: 'ID', field: 'id', width: 80 },
@@ -29,7 +24,7 @@ const fetchUsers = async (page = currentPage.value) => {
   errorMessage.value = ''
 
   try {
-    const { data, headers } = await api.get<ApiUser[]>('/users', {
+    const { data, headers } = await http.get<ApiUser[]>('/users', {
       params: {
         _page: page,
         _limit: pageSize,
