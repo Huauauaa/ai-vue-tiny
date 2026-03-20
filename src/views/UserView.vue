@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { Pager as TinyPager, Table as TinyTable } from '@opentiny/vue'
 
 type ApiUser = {
@@ -23,6 +23,7 @@ type UserRow = {
 
 const pageSize = 5
 const currentPage = ref(1)
+const totalUsers = ref(0)
 const loading = ref(false)
 const errorMessage = ref('')
 const users = ref<UserRow[]>([])
@@ -40,21 +41,20 @@ const tableColumns = [
   { title: '公司', field: 'company', width: 180, showOverflow: true },
 ]
 
-const pagedData = computed(() => {
-  const start = (currentPage.value - 1) * pageSize
-  return users.value.slice(start, start + pageSize)
-})
-
-const handleCurrentChange = (page: number) => {
-  currentPage.value = page
-}
-
-const fetchUsers = async () => {
+const fetchUsers = async (page = currentPage.value) => {
   loading.value = true
   errorMessage.value = ''
 
   try {
-    const { data } = await api.get<ApiUser[]>('/users')
+    const { data, headers } = await api.get<ApiUser[]>('/users', {
+      params: {
+        _page: page,
+        _limit: pageSize,
+      },
+    })
+
+    const totalCount = Number(headers['x-total-count'])
+    totalUsers.value = Number.isFinite(totalCount) && totalCount > 0 ? totalCount : data.length
     users.value = data.map((item) => ({
       id: item.id,
       name: item.name,
@@ -62,11 +62,18 @@ const fetchUsers = async () => {
       email: item.email,
       company: item.company?.name ?? '-',
     }))
+    currentPage.value = page
   } catch {
     errorMessage.value = '用户数据加载失败，请稍后重试。'
+    totalUsers.value = 0
+    users.value = []
   } finally {
     loading.value = false
   }
+}
+
+const handleCurrentChange = (page: number) => {
+  void fetchUsers(page)
 }
 
 onMounted(() => {
@@ -82,13 +89,13 @@ onMounted(() => {
     <p v-else-if="errorMessage" class="text-sm text-red-500">{{ errorMessage }}</p>
 
     <template v-else>
-      <TinyTable :columns="tableColumns" :data="pagedData" width="100%" />
+      <TinyTable :columns="tableColumns" :data="users" width="100%" />
 
       <TinyPager
         class="mt-4"
         :current-page="currentPage"
         :page-size="pageSize"
-        :total="users.length"
+        :total="totalUsers"
         layout="prev, pager, next, jumper, total"
         @current-change="handleCurrentChange"
       />
